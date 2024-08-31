@@ -1,0 +1,62 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(to bottom right, #5a5dff, #9649e9);
+    height: 100vh;
+    padding: 20px;
+    position: relative;
+  }
+  
+  .logo {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    height: 75px;
+    width: 75px;
+  }
+
+  .profile-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .avatar {
+    background: #ddd;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+  }
+  
+  h1 {
+    color: white;
+    margin-bottom: 20px;
+  }
+  
+  .video-panel {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    padding-top: 20px;
+  }
+  
+  .video-container {
+    background-color: #ccc;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    width: calc(40% - 40px); /* Adjusting width for two videos per row */
+    margin-bottom: 20px;
+  }
+  
+  .video-panel.single {
+    width: calc(80% - 40px); /* Full width for the single video on the bottom row */
+  }
+  

@@ -1,0 +1,29 @@
+<div class="session-container">
+    <img src="/assets/sparetime_logo.png" alt="sparetime Logo" class="logo" />
+    <div class="profile-icon" (click)="navigateToSettings()">
+      <div class="avatar"></div>
+      <span>Profile</span>
+    </div>
+    <h1>Start your session</h1>
+    <div class="session-length">
+      <button (click)="adjustSessionLength(-5)">-</button>
+      <span>{{ sessionLength }} minutes</span>
+      <button (click)="adjustSessionLength(5)">+</button>
+    </div>
+    <h2>Content Format</h2>
+    <div class="content-format">
+      <label>
+        <input type="checkbox" (change)="toggleFormat('video')" [checked]="format.includes('video')" /> Video
+      </label>
+      <label>
+        <input type="checkbox" (change)="toggleFormat('article')" [checked]="format.includes('article')" /> Article
+      </label>
+      <label>
+        <input type="checkbox" (change)="toggleFormat('podcast')" [checked]="format.includes('podcast')" /> Podcast
+      </label>
+    </div>
+    <h2>Content Types</h2>
+    <input type="text" placeholder="Enter topics or keywords" [(ngModel)]="contentKeywords" />
+    <button class="find-content-button" (click)="displayContent()">Find Content</button>
+  </div>
+  

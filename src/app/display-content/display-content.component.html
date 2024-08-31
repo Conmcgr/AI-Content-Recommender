@@ -1,0 +1,31 @@
+<div class="container">
+    <img src="/assets/sparetime_logo.png" alt="sparetime Logo" class="logo" (click)="navigateToHome()" />
+    <div class="profile-icon" (click)="navigateToSettings()">
+        <div class="avatar"></div>
+        <span>Profile</span>
+    </div>
+      
+    <h1>Recommended Content</h1>
+  
+    <div class="video-panel">
+        <div class="video-container">
+            <iframe width="505" height="285" [src]="vidId1" frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen></iframe>
+        </div>
+    
+        <div class="video-container">
+            <iframe width="505" height="285" [src]="vidId2" frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <div class="video-panel">
+        <div class="video-container single">
+            <iframe width="505" height="285" [src]="vidId3" frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen></iframe>
+        </div>
+    </div>
+</div>

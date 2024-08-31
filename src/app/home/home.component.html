@@ -1,0 +1,17 @@
+<div class="home-container">
+    <div class="profile-icon" (click)="navigateToSettings()">
+      <img src="/assets/profile_icon.png" alt="Profile Avatar" class="avatar" />
+      <span>Profile</span>
+    </div>
+    <img src="/assets/sparetime_logo.png" alt="sparetime Logo" class="logo" />
+    <h1>sparetime</h1>
+    <button class="start-session-button" (click)="startSession()">Start a new session</button>
+    <h2>Review Content</h2>
+    <div class="review-content">
+      <!-- Placeholder for review items; replace with actual data -->
+      <div class="review-item" *ngFor="let item of reviewItems">
+        <h3>{{ item.title }}</h3>
+      </div>
+    </div>
+  </div>
+  

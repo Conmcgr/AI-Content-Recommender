@@ -1,0 +1,22 @@
+# This file is used by the build system to adjust CSS and JS output to support the specified browsers below.
+# For additional information regarding the format and rule options, please see:
+# https://github.com/browserslist/browserslist
+
+# You can see what browsers were selected by your queries by running:
+#   npx browserslist
+
+# Full list of available queries: https://github.com/browserslist/browserslist#queries
+# Example queries:
+# last 1 version
+# > 1%
+# maintained node versions
+# last 2 versions
+
+# For more information, please see:
+# https://angular.dev/guide/browser-support
+
+# This is the full list of supported browsers for Angular 16. It is updated after every new major release.
+last 2 Chrome versions
+last 2 Firefox versions
+last 2 Safari versions
+last 2 Edge versions
