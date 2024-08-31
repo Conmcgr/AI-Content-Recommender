@@ -30,7 +30,7 @@ export class StartSessionComponent {
   };
   videoIds: Number[] = [];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private http: HttpClient) {}
 
   adjustSessionLength(amount: number) {
     const newLength = this.sessionLength + amount;

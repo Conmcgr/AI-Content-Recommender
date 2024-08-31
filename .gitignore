@@ -45,4 +45,3 @@ Thumbs.db
 /backend/.env
 /.env
 /recommendation_system/venv/
-test
