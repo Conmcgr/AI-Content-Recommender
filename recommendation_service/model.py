@@ -6,6 +6,7 @@ import torch
 from transformers import BertTokenizer, BertModel
 from data_collection import make_embedding
 
+"""
 def update_average_video_embedding(avg_vid_embedding, total_ratings, new_video, new_rating):
     total_ratings += new_rating
 
@@ -24,7 +25,7 @@ def update_average_video_embedding(avg_vid_embedding, total_ratings, new_video, 
 
     return [avg_vid_embedding, total_ratings]
 
-
+"""
 
 def interest_video_similarity(user, videos, num_vids):
     if user["interests"] == []:
@@ -166,48 +167,3 @@ def get_top_3(video_collection, user):
                 break
 
     return final_video_ids
-
-client = pymongo.MongoClient("mongodb://localhost:27017/")
-db = client['sparetime_database']
-video_collection = db['videos']
-videos = video_collection.find({})
-users_collection = db['users']
-users = users_collection.find({})
-
-dummy_user = {
-    "_id": "test_id",
-    "email": "connor.q.mcgraw@gmail.com",
-    "username":"cmcgraw",
-    "password":"test_password",
-    "interests": ["machine learning", "financial technology", "software engineering"],
-    "average video" : {},
-    "total ratings" : 0,
-    "total videos" : 0
-}
-
-new_video = {
-    'title': 'Using a neural network to beat wordle!',
-    'description': 'blah blah blah',
-    'channel title': 'NNBasics',
-    'category': 'machine learning methods'
-}
-new_rating = 5
-
-new_video2 = {
-    'title': 'Teaching a robot to play the guitar!',
-    'description': 'this is a test description',
-    'channel title': '3Blue1Brown',
-    'category': 'robotics and machine learning'
-}
-new_rating2 = 3
-
-embedded_interest = make_embedding(dummy_user["interests"])
-
-dummy_user["average video"], dummy_user["total ratings"] = update_average_video_embedding(dummy_user["average video"], dummy_user["total ratings"], new_video, new_rating)
-dummy_user["average video"], dummy_user["total ratings"] = update_average_video_embedding(dummy_user["average video"], dummy_user["total ratings"], new_video2, new_rating2)
-
-top_3 = get_top_3(videos, dummy_user)
-print(top_3)
-
-for vid_id in top_3:
-   print(video_collection.find({'video_id': vid_id}))

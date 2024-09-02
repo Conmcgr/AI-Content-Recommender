@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
-from model import get_top_3, update_average_video_embedding
+from model import get_top_3
 
 app = Flask(__name__)
 
@@ -12,11 +12,15 @@ users_collection = db['users']
 @app.route('/api/top3', methods=['GET'])
 def get_top_3_videos():
     user_id = request.headers.get('userId')
+    print(f"Received request for user_id: {user_id}")
+    if not user_id:
+        return jsonify({"error": "User ID not provided"}), 400
     user = users_collection.find_one({"_id": user_id})
     if not user:
-        return jsonify({"error": "User not found"}), 404
+        return jsonify({"error": user_id + " not found"}), 404
     
     top_3_video_ids = get_top_3(video_collection, user)
+    print(f"Returning top 3 video IDs: {top_3_video_ids}")
     return jsonify({"top3VideoIds": top_3_video_ids})
 
 @app.route('/api/rate_video', methods=['POST'])

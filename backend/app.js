@@ -4,6 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
+const videoRoutes = require('./routes/video');
 require('dotenv').config();
 
 const jwtSecret = process.env.JWT_SECRET;
@@ -15,6 +16,7 @@ app.use(bodyParser.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/video', videoRoutes);
 
 mongoose.connect('mongodb://localhost:27017/sparetime_database', {
   useNewUrlParser: true,

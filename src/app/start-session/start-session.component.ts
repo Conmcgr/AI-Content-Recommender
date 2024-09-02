@@ -59,6 +59,7 @@ export class StartSessionComponent {
       headers: { Authorization: `Bearer ${token}` }
     }).subscribe(
       response => {
+        console.log('Top 3 videos response:', response);
         this.videoIds = response.videoIds;
       },
       error => {

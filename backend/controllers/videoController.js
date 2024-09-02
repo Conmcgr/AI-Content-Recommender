@@ -8,10 +8,14 @@ exports.getTop3 = async (req, res) => {
         });
         res.status(200).json({videoIds: pythonServiceResponse.data});
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch top 3 videos' });
+        console.error('Error in getTop3:', error.message);
+        if (error.response) {
+            console.error('Python service response:', error.response.data);
+            console.error('Status code:', error.response.status);
+        }
+        res.status(500).json({ error: 'Failed to fetch top 3 videos', details: error.message });
     }
 };
-
 exports.rateVideo = async (req, res) => {
     try {
         const userId = req.userId;
