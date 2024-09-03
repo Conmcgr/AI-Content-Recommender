@@ -59,14 +59,19 @@ export class StartSessionComponent {
       headers: { Authorization: `Bearer ${token}` }
     }).subscribe(
       response => {
-        console.log('Top 3 videos response:', response);
-        this.videoIds = response.videoIds;
+        console.log('Top 3 videos response:', response.videoIds['top3VideoIds']);
+        this.videoIds = response.videoIds['top3VideoIds'];
+        this.router.navigate(['/display-content'], { queryParams: {vid_id1: this.videoIds[0], vid_id2: this.videoIds[1], vid_id3: this.videoIds[2] } });
       },
       error => {
         console.log('Error fetching videos', error);
       }
     );
-    this.router.navigate(['/display-content'], { queryParams: {'vid_id1': this.videoIds[0], 'vid_id2': this.videoIds[1], 'vid_id3': this.videoIds[2] } });
+    console.log(this.videoIds);
+    console.log(this.videoIds[1]);
+    console.log(this.videoIds[2]);
+
+    
   }
 
   navigateToSettings() {

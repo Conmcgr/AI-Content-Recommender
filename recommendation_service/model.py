@@ -115,7 +115,7 @@ def get_top_3(video_collection, user):
     videos = video_collection.find({})
     interest_list = interest_video_similarity(user, videos, 20)
 
-    if user["videos_rated"] == 0:
+    if user["total_videos"] == 0:
         video_ids = [video_id for sim, video_id in interest_list[:3]]
         return video_ids
 

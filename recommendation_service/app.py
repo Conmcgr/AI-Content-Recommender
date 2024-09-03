@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from model import get_top_3
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 
@@ -15,7 +16,7 @@ def get_top_3_videos():
     print(f"Received request for user_id: {user_id}")
     if not user_id:
         return jsonify({"error": "User ID not provided"}), 400
-    user = users_collection.find_one({"_id": user_id})
+    user = users_collection.find_one({ "_id": ObjectId(user_id) })
     if not user:
         return jsonify({"error": user_id + " not found"}), 404
     
