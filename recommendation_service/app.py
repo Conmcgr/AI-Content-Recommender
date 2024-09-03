@@ -13,7 +13,6 @@ users_collection = db['users']
 @app.route('/api/top3', methods=['GET'])
 def get_top_3_videos():
     user_id = request.headers.get('userId')
-    print(f"Received request for user_id: {user_id}")
     if not user_id:
         return jsonify({"error": "User ID not provided"}), 400
     user = users_collection.find_one({ "_id": ObjectId(user_id) })
