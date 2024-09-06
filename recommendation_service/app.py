@@ -69,5 +69,15 @@ def get_queue():
     videos = list(queue_colection.find({"user_id": user_id}).sort("timestamp", 1))
     return jsonify(videos)
 
+@app.route('/api/remove_from_queue', methods=['POST'])
+def remove_from_queue():
+    video_info = request.json['video']
+    video = queue_colection.find_one({"video": video_info})
+    if not video:
+        return jsonify({"error": "Video not found"}), 404
+    queue_colection.delete_one({"video": video})
+    return jsonify({"message": "Video removed from queue successfully"})
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
