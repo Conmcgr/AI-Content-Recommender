@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from model import get_top_3
 from bson.objectid import ObjectId
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -9,6 +10,7 @@ client = MongoClient("mongodb://localhost:27017/")
 db = client['sparetime_database']
 video_collection = db['videos']
 users_collection = db['users']
+queue_colection = db['rating_queue']
 
 @app.route('/api/top3', methods=['GET'])
 def get_top_3_videos():
@@ -43,6 +45,29 @@ def video_info():
     if not video:
         return jsonify({"error": "Video not found"}, 404)
     return jsonify(video)
+
+@app.route('/api/add_to_queue', methods=['POST'])
+def add_to_queue():
+    user_id = request.headers.get('userId')
+    video_id = request.json['videoId']
+    user = users_collection.find_one({ "_id": ObjectId(user_id) })
+    video = video_collection.find_one({"video_id": video_id})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    if not video:
+        return jsonify({"error": "Video not found"}), 404
+    queue_colection.insert_one({"user_id": user_id, "video": video, "timestamp": datetime.now()})
+    
+    return jsonify({"message": "Video added to queue successfully"})
+
+@app.route('/api/get_queue', methods=['GET'])
+def get_queue():
+    user_id = request.headers.get('userId')
+    user = users_collection.find_one({ "_id": ObjectId(user_id) })
+    if not user:
+        return jsonify({"error": "User not found"}, 404)
+    videos = list(queue_colection.find({"user_id": user_id}).sort("timestamp", 1))
+    return jsonify(videos)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

@@ -4,7 +4,8 @@ require('dotenv').config();
 const {
   getTop3,
   rateVideo,
-  getVideoInfo
+  getVideoInfo,
+  addToQueue
 } = require('../controllers/videoController');
 
 const jwtSecret = process.env.JWT_SECRET;
@@ -27,6 +28,7 @@ router.use(extractUserId);
 router.get('/top3', getTop3);
 router.post('/rate-video', rateVideo);
 router.get('/video-info', getVideoInfo);
+router.post('/add-queue', addToQueue)
 
 module.exports = router;
 
