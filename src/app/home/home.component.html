@@ -1,17 +1,21 @@
 <div class="home-container">
-    <div class="profile-icon" (click)="navigateToSettings()">
-      <img src="/assets/profile_icon.png" alt="Profile Avatar" class="avatar" />
-      <span>Profile</span>
-    </div>
-    <img src="/assets/sparetime_logo.png" alt="sparetime Logo" class="logo" />
-    <h1>sparetime</h1>
-    <button class="start-session-button" (click)="startSession()">Start a new session</button>
-    <h2>Review Content</h2>
-    <div class="review-content">
-      <!-- Placeholder for review items; replace with actual data -->
-      <div class="review-item" *ngFor="let item of reviewItems">
-        <h3>{{ item.title }}</h3>
+  <div class="profile-icon" (click)="navigateToSettings()">
+    <img src="/assets/profile_icon.png" alt="Profile Avatar" class="avatar" />
+    <span>Profile</span>
+  </div>
+  <img src="/assets/sparetime_logo.png" alt="sparetime Logo" class="logo" />
+  <h1>sparetime</h1>
+  <button class="start-session-button" (click)="startSession()">Start a new session</button>
+  
+  <h2>Ratings Queue</h2>
+  <div class="ratings-queue">
+    <div *ngFor="let video of queuedVideos" class="queue-item">
+      <img [src]="'https://img.youtube.com/vi/' + video.video_id + '/default.jpg'" alt="Video thumbnail" class="video-thumbnail">
+      <span class="video-title">{{ video.title }}</span>
+      <div class="rating-input">
+        <input type="number" min="1" max="5" placeholder="Rate 1-5" #ratingInput>
+        <button (click)="submitRating(video.video_id, +ratingInput.value)">Submit Rating</button>
       </div>
     </div>
   </div>
-  
+</div>

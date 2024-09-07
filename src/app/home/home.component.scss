@@ -67,5 +67,53 @@
       width: 100%;
       text-align: center;
     }
+
+    .ratings-queue {
+  max-height: 400px; // Adjust this value as needed
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 20px;
+}
+
+  .queue-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+      border-bottom: none;
+    }
   }
+
+  .video-thumbnail {
+    width: 120px;
+    height: 90px;
+    object-fit: cover;
+    margin-right: 10px;
+  }
+
+  .video-title {
+    flex: 1;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; // This will limit the text to 2 lines
+    -webkit-box-orient: vertical;
+    margin-right: 10px; // Add some space between the title and the input box
+  }
+
+  .rating-input {
+    display: flex;
+    align-items: center;
+
+    input {
+      width: 70px;
+      margin-right: 10px;
+    }
+  }
+}
   

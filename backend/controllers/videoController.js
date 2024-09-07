@@ -35,8 +35,7 @@ exports.getVideoInfo = async (req, res) => {
         const userId = req.userId;
         const { videoId } = req.body;
         const pythonServiceResponse = await axios.get('http://127.0.0.1:5000/api/video_info', {
-            params: { videoId },
-            headers: { userId: userId }
+            headers: { userId: userId, videoId: videoId}
         });
         res.status(200).json(pythonServiceResponse.data);
     } catch (error) {
@@ -48,12 +47,23 @@ exports.addToQueue = async (req, res) => {
     try {
         const userId = req.userId;
         const { videoId } = req.body;
-        await axios.post('http://127.0.0.1:5000/api/add-to-queue', 
+        await axios.post('http://127.0.0.1:5000/api/add_to_queue', 
             { videoId },
             { headers: { userId: userId } }
         );
         res.status(200).json({ message: 'Video added to queue successfully' });
     } catch (error) {
         res.status(500).json({ error: 'Failed to add video to queue' });
+    }
+};
+exports.getQueue = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const pythonServiceResponse = await axios.get('http://127.0.0.1:5000/api/get_queue', {
+            headers: { userId: userId }
+        });
+        res.status(200).json({queue: pythonServiceResponse.data});
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch queue' });
     }
 };

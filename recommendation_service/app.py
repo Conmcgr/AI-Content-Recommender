@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from model import get_top_3
 from bson.objectid import ObjectId
 from datetime import datetime
+from bson import json_util
 
 app = Flask(__name__)
 
@@ -67,7 +68,8 @@ def get_queue():
     if not user:
         return jsonify({"error": "User not found"}, 404)
     videos = list(queue_colection.find({"user_id": user_id}).sort("timestamp", 1))
-    return jsonify(videos)
+    simplified_videos = [{"video_id": v["video"]["video_id"], "title": v["video"]["title"]} for v in videos]
+    return jsonify(simplified_videos)
 
 @app.route('/api/remove_from_queue', methods=['POST'])
 def remove_from_queue():
