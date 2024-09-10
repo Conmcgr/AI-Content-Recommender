@@ -6,7 +6,8 @@ const {
   rateVideo,
   getVideoInfo,
   addToQueue,
-  getQueue
+  getQueue,
+  removeFromQueue
 } = require('../controllers/videoController');
 
 const jwtSecret = process.env.JWT_SECRET;
@@ -31,6 +32,7 @@ router.post('/rate-video', rateVideo);
 router.get('/video-info', getVideoInfo);
 router.post('/add-to-queue', addToQueue)
 router.get('/get-queue', getQueue);
+router.post('/remove-from-queue', removeFromQueue);
 
 module.exports = router;
 

@@ -64,16 +64,36 @@ export class HomeComponent implements OnInit {
 
   submitRating(videoId: string, rating: number) {
     const token = localStorage.getItem('token');
-    this.http.post('/api/submit_rating', { video_id: videoId, rating }, {
+    console.log('Submitting rating:', { videoId, rating });
+    this.http.post('/api/video/rate-video', { videoId, rating }, {
       headers: { Authorization: `Bearer ${token}` }
     }).subscribe(
-      () => {
-        console.log('Rating submitted successfully');
+      (response) => {
+        console.log('Rating submitted successfully', response);
       },
       (error) => {
         console.error('Error submitting rating:', error);
+        if (error.error && error.error.message) {
+          console.error('Server error message:', error.error.message);
+        }
       }
     );
+
+    this.http.post('/api/video/remove-from-queue', { videoId }, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe(
+      (response) => {
+        console.log('Video removed from queue', response);
+        this.fetchQueuedVideos();
+      },
+      (error) => {
+        console.error('Error removing from queue:', error);
+        if (error.error && error.error.message) {
+          console.error('Server error message:', error.error.message);
+        }
+      }
+    ); 
+
   }
 
 }

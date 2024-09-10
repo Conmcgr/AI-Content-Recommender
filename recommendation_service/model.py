@@ -6,26 +6,34 @@ import torch
 from transformers import BertTokenizer, BertModel
 from data_collection import make_embedding
 
-"""
 def update_average_video_embedding(avg_vid_embedding, total_ratings, new_video, new_rating):
+    new_rating = int(new_rating)
     total_ratings += new_rating
 
+    feature_map = {'title': 'title_embedded',
+    'description': 'description_embedded',
+    'channel_title': 'channel_title_embedded',
+    'category': 'category_embedded'}
+
     #Make this check that the avg_vid_embedding is empty
-    if avg_vid_embedding == is an empty array:
-        for feature in new_video:
-            #REMOVE THE MAKE EMBEDDING PART FROM BELOW all videos should be embedded already
-            #avg_vid_embedding[feature] = make_embedding(new_video[feature]) * new_rating
+    is_empty = False
+    for feature in avg_vid_embedding:
+        if feature != '_id' and len(avg_vid_embedding[feature]) == 0:
+            is_empty = True
+
+    if is_empty:
+        for feature in avg_vid_embedding:
+            if feature != '_id':
+                avg_vid_embedding[feature] = (np.array(new_video[feature_map[feature]]) * new_rating).tolist()
     else:
         for feature in avg_vid_embedding:
-            old_emb = torch.tensor(avg_vid_embedding[feature])
-            #REMOVE THE MAKE EMBEDDING PART FROM BELOW all videos should be embedded already
-            new_emb = make_embedding(new_video[feature])
-            new_avg = (old_emb + new_emb*new_rating) / (total_ratings)
-            avg_vid_embedding[feature] = new_avg.tolist()
+            if feature != '_id':
+                old_emb = np.array(avg_vid_embedding[feature])
+                new_emb = np.array(new_video[feature_map[feature]]) * new_rating
+                new_avg = (old_emb * total_ratings + new_emb) / (total_ratings + 1)
+                avg_vid_embedding[feature] = new_avg.tolist()
 
     return [avg_vid_embedding, total_ratings]
-
-"""
 
 def interest_video_similarity(user, videos, num_vids):
     if user["interests"] == []:
