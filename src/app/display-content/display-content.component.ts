@@ -35,22 +35,25 @@ export class DisplayContentComponent {
   }
 
   onVideoClick(videoId: string) {
-    const url = `https://www.youtube.com/watch?v=${videoId}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
     const token = localStorage.getItem('token');
     if (!token) {
       console.log('No token found');
       this.router.navigate(['/login']);
       return;
     }
-    this.http.post('/api/video/add-queue', { videoId }, {
+    this.http.post('/api/video/add-to-queue', { videoId }, {
       headers: { Authorization: `Bearer ${token}` }
-    })
-    this.router.navigate(['/home']);
-  }
-
-  getSafeUrl(videoId: string): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}`);
+    }).subscribe(
+      response => {
+        console.log('Video added to queue:', response);
+        const url = `https://www.youtube.com/watch?v=${videoId}`;
+        window.open(url, '_blank', 'noopener,noreferrer');
+        this.router.navigate(['/home']);
+      },
+      error => {
+        console.error('Error adding video to queue:', error);
+      }
+    );
   }
 
 }

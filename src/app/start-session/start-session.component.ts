@@ -58,20 +58,22 @@ export class StartSessionComponent {
     this.http.get<any>('/api/video/top3', {
       headers: { Authorization: `Bearer ${token}` }
     }).subscribe(
-      response => {
-        console.log('Top 3 videos response:', response.videoIds['top3VideoIds']);
-        this.videoIds = response.videoIds['top3VideoIds'];
-        this.router.navigate(['/display-content'], { queryParams: {vid_id1: this.videoIds[0], vid_id2: this.videoIds[1], vid_id3: this.videoIds[2] } });
+      (response: any) => {
+        if (response && response.videoIds && response.videoIds.length >= 3) {
+          const queryParams = {
+            vid_id1: response.videoIds[0],
+            vid_id2: response.videoIds[1],
+            vid_id3: response.videoIds[2]
+          };
+          this.router.navigate(['/display-content'], { queryParams });
+        } else {
+          console.error('Invalid response format:', response);
+        }
       },
       error => {
-        console.log('Error fetching videos', error);
+        console.error('Error fetching top 3 videos:', error);
       }
     );
-    console.log(this.videoIds);
-    console.log(this.videoIds[1]);
-    console.log(this.videoIds[2]);
-
-    
   }
 
   navigateToSettings() {

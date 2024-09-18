@@ -22,7 +22,7 @@ def get_top_3_videos():
     if not user:
         return jsonify({"error": user_id + " not found"}), 404
     
-    top_3_video_ids = get_top_3(video_collection, user)
+    top_3_video_ids = get_top_3(video_collection, users_collection, user)
     print(f"Returning top 3 video IDs: {top_3_video_ids}")
     return jsonify({"top3VideoIds": top_3_video_ids})
 
@@ -47,7 +47,7 @@ def rate_video():
         print(f"Updated average: {new_avg}")
         print(f"New total ratings: {new_total}")
         
-        users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": {"average_video": new_avg, "total_ratings": new_total}})
+        users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": {"average_video": new_avg, "total_ratings": new_total, "total_videos": user['total_videos'] + 1}})
         return jsonify({"message": "Rating updated successfully"})
     except Exception as e:
         print(f"Error in rate_video: {str(e)}")
@@ -64,7 +64,7 @@ def video_info():
 @app.route('/api/add_to_queue', methods=['POST'])
 def add_to_queue():
     user_id = request.headers.get('userId')
-    video_id = request.json['videoId']
+    video_id = request.headers.get('videoId')
     user = users_collection.find_one({ "_id": ObjectId(user_id) })
     video = video_collection.find_one({"video_id": video_id})
     if not user:

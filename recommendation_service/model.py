@@ -5,6 +5,7 @@ import random
 import torch
 from transformers import BertTokenizer, BertModel
 from data_collection import make_embedding
+import math
 
 def update_average_video_embedding(avg_vid_embedding, total_ratings, new_video, new_rating):
     new_rating = int(new_rating)
@@ -44,7 +45,7 @@ def interest_video_similarity(user, videos, num_vids):
     video_weights = {
         "title": 0.32,
         "description" : 0.32,
-        "channel title": 0.12,
+        "channel_title": 0.12,
         "tags" : 0.12,
         "category" : 0.12,
      }
@@ -54,7 +55,7 @@ def interest_video_similarity(user, videos, num_vids):
             "video id": video.get('video_id', []),
             "title": video.get('title_embedded', []),
             "description" : video.get('description_embedded', []),
-            "channel title": video.get('channel_title_embedded', []),
+            "channel_title": video.get('channel_title_embedded', []),
             "tags" : video.get('tags_embedded', []),
             "category" : video.get('category_embedded', [])
             }
@@ -78,7 +79,7 @@ def interest_video_similarity(user, videos, num_vids):
      
 
 def ratings_video_similarity(user, videos, num_vids):
-    avg_vid = user["average video"]
+    avg_vid = user["average_video"]
 
     if avg_vid == {}:
         return []
@@ -87,7 +88,7 @@ def ratings_video_similarity(user, videos, num_vids):
     video_weights = {
         "title": 0.35,
         "description" : 0.35,
-        "channel title": 0.15,
+        "channel_title": 0.15,
         "category" : 0.15,
      }
 
@@ -96,7 +97,7 @@ def ratings_video_similarity(user, videos, num_vids):
             "video id": video.get('video_id', []),
             "title": video.get('title_embedded', []),
             "description" : video.get('description_embedded', []),
-            "channel title": video.get('channel_title_embedded', []),
+            "channel_title": video.get('channel_title_embedded', []),
             "category" : video.get('category_embedded', [])
             }
 
@@ -118,60 +119,32 @@ def ratings_video_similarity(user, videos, num_vids):
     similarities.sort(reverse = True)
     return similarities[:num_vids]
 
-def get_top_3(video_collection, user):
-
-    videos = video_collection.find({})
+def get_top_3(video_collection, users_collection, user):
+    videos = list(video_collection.find({"video_id": {"$nin": user["videos_seen"]}}))
+    if user['total_videos'] == 0:
+        print('here')
+        top_3 = [video_id for similarity, video_id in interest_video_similarity(user, videos, 3)]
+        users_collection.update_one({"_id": user["_id"]}, {"$set": {"videos_seen": top_3}})
+        return top_3
+    
     interest_list = interest_video_similarity(user, videos, 20)
-
-    if user["total_videos"] == 0:
-        video_ids = [video_id for sim, video_id in interest_list[:3]]
-        return video_ids
-
-    videos = video_collection.find({})
     ratings_list = ratings_video_similarity(user, videos, 20)
 
-    interest_dict = {video_id: sim for sim, video_id in interest_list}
-    ratings_dict = {video_id: sim for sim, video_id in ratings_list}
+    total_rated = user["total_videos"]
+    bias_factor = 1 - math.exp(-0.5 * total_rated)
 
-    # Find common video IDs using intersection
-    common_video_ids = list(set(interest_dict.keys()).intersection(set(ratings_dict.keys())))
+    combined_list = []
+    for video_id in set([vid for _, vid in interest_list] + [vid for _, vid in ratings_list]):
+        interest_sim = next((sim for sim, vid in interest_list if vid == video_id), 0)
+        ratings_sim = next((sim for sim, vid in ratings_list if vid == video_id), 0)
+        
+        combined_sim = (1 - bias_factor) * interest_sim + bias_factor * ratings_sim
+        combined_list.append((combined_sim, video_id))
 
-    # Initialize the final result list
-    final_video_ids = []
+    combined_list.sort(reverse=True, key=lambda x: x[0])
+    top_3 = [video_id for _, video_id in combined_list[:3]]
+    
+    user["videos_seen"].extend(top_3)
+    users_collection.update_one({"_id": user["_id"]}, {"$set": {"videos_seen": user["videos_seen"]}})
 
-    if len(common_video_ids) == 3:
-        # Exactly 3 common videos, return them directly
-        final_video_ids = common_video_ids
-    elif len(common_video_ids) > 3:
-        # Calculate cumulative similarity for common videos
-        cumulative_similarities = [(video_id, interest_dict[video_id] + ratings_dict[video_id]) for video_id in common_video_ids]
-
-        # Sort by cumulative similarity in descending order
-        cumulative_similarities.sort(key=lambda x: x[1], reverse=True)
-
-        # Select the top 3 videos with the highest cumulative similarity
-        final_video_ids = [video_id for video_id, _ in cumulative_similarities[:3]]
-    else:
-        # Less than 3 common videos, add them first
-        final_video_ids = common_video_ids
-
-        # Normalize similarities for the remaining videos in each list
-        remaining_interest = [(sim, video_id) for sim, video_id in interest_list if video_id not in final_video_ids]
-        remaining_ratings = [(sim, video_id) for sim, video_id in ratings_list if video_id not in final_video_ids]
-
-        # Normalize the similarities in both lists
-        remaining_interest_normalized = [(sim / np.max([sim for sim, _ in remaining_interest]), video_id) for sim, video_id in remaining_interest]
-        remaining_ratings_normalized = [(sim / np.max([sim for sim, _ in remaining_ratings]), video_id) for sim, video_id in remaining_ratings]
-
-        # Combine the remaining lists and sort by normalized similarity
-        combined_remaining = remaining_interest_normalized + remaining_ratings_normalized
-        combined_remaining.sort(reverse=True, key=lambda x: x[0])
-
-        # Add the highest normalized video IDs until the final_video_ids list has 3 items
-        for _, video_id in combined_remaining:
-            if video_id not in final_video_ids:
-                final_video_ids.append(video_id)
-            if len(final_video_ids) == 3:
-                break
-
-    return final_video_ids
+    return top_3

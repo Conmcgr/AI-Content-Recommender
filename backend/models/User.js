@@ -15,7 +15,8 @@ const UserSchema = new mongoose.Schema({
   interests: { type: [String] },
   average_video: { type: VideoSchema, default: defaultEmptyVideo},
   total_ratings: { type: Number, default: 0},
-  total_videos: { type: Number, default: 0}
+  total_videos: { type: Number, default: 0},
+  videos_seen: { type: [String], default: [] }
 });
 
 module.exports = mongoose.model('User', UserSchema);

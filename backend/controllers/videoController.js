@@ -6,7 +6,7 @@ exports.getTop3 = async (req, res) => {
         const pythonServiceResponse = await axios.get('http://127.0.0.1:5000/api/top3', {
             headers: { userId: userId }
         });
-        res.status(200).json({videoIds: pythonServiceResponse.data});
+        res.status(200).json({videoIds: pythonServiceResponse.data.top3VideoIds});
     } catch (error) {
         console.error('Error in getTop3:', error.message);
         if (error.response) {
@@ -54,13 +54,26 @@ exports.addToQueue = async (req, res) => {
     try {
         const userId = req.userId;
         const { videoId } = req.body;
-        await axios.post('http://127.0.0.1:5000/api/add_to_queue', 
-            { videoId },
-            { headers: { userId: userId } }
+        
+        if (!userId || !videoId) {
+            console.error('Missing userId or videoId');
+            return res.status(400).json({ error: 'Missing required parameters' });
+        }
+
+        const response = await axios.post('http://127.0.0.1:5000/api/add_to_queue', 
+            {},
+            { headers: { userId: userId, videoId: videoId } }
         );
+
+        console.log('Python service response:', response.data);
         res.status(200).json({ message: 'Video added to queue successfully' });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to add video to queue' });
+        console.error('Error in addToQueue:', error.message);
+        if (error.response) {
+            console.error('Python service response:', error.response.data);
+            console.error('Status code:', error.response.status);
+        }
+        res.status(500).json({ error: 'Failed to add video to queue', details: error.message });
     }
 };
 
