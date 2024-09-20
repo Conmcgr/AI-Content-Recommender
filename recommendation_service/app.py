@@ -55,11 +55,14 @@ def rate_video():
 
 @app.route('/api/video_info', methods=['GET'])
 def video_info():
-    video_id = request.args.get('videoId')
+    video_id = request.headers.get('videoId')
+    print(video_id)
     video = video_collection.find_one({"video_id": video_id})
     if not video:
-        return jsonify({"error": "Video not found"}, 404)
-    return jsonify(video)
+        return jsonify({"error": "Video not found"}), 404
+    output = {'title': video['title'].replace("&#39;", "'"), 'description': video['description'].replace("&#39;", "'"), 'channelTitle': video['channel_title'].replace("&#39;", "'")}
+    print(output)
+    return jsonify(output)
 
 @app.route('/api/add_to_queue', methods=['POST'])
 def add_to_queue():

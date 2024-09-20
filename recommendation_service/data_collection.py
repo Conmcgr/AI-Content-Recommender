@@ -34,7 +34,8 @@ def make_youtube_request(search_params):
         'part': 'snippet',
         'q': search_params['search_string'],
         'type': 'video',
-        'maxResults': search_params['num_results']
+        'maxResults': search_params['num_results'],
+        'order' : 'viewCount'
     }
 
     if 'channel_id' in search_params:
@@ -77,18 +78,15 @@ def store_metadata(metadata, search_tag):
     for item in metadata['items']:
         video_id = item['id']['videoId']
         
-        # Check if the video already exists in the database
         existing_video = video_collection.find_one({'video_id': video_id})
         
         if existing_video:
             print(f"Video with ID {video_id} already exists. Skipping insertion.")
-            continue  # Skip to the next video if it already exists
-        
-        # Fetch additional metadata for the video
+            continue
+
         vid_info_request = youtube.videos().list(part="snippet,contentDetails", id=video_id)
         more_vid_metadata = vid_info_request.execute()
         
-        # Handle case where no additional details are available
         if 'items' not in more_vid_metadata or not more_vid_metadata['items']:
             print(f"Could not retrieve additional metadata for video ID {video_id}. Skipping.")
             continue
@@ -97,7 +95,6 @@ def store_metadata(metadata, search_tag):
         
         tags = more_details['snippet'].get('tags', [])
 
-        # Prepare video data to be inserted into the database
         video_data = {
             'video_id': video_id,
             'title': item['snippet']['title'],
@@ -120,12 +117,20 @@ def store_metadata(metadata, search_tag):
             'default_audio_language': more_details['snippet'].get('defaultAudioLanguage', 'Unknown')
         }
 
-        # Insert the new video into MongoDB
         video_collection.insert_one(video_data)
         print(f'inserted video: {video_id}')
 
-def make_first_entry():
-    initial_searches = [
+def make_entry(searches):
+    
+
+    for search in searches:
+        try:
+            response = make_youtube_request(search)
+            store_metadata(response, search['search_string'])
+        except Exception as e:
+            print(f"Error processing search: {search['search_string']}. Error: {str(e)}")
+
+initial_searches = [
     {'search_string': 'machine learning transformers', 'num_results': 5, 'chanel_id': 'UCYO_jab_esuFRV4b17AJtAw', 'chanel_name': '3blue1brown'}, 
     {'search_string': 'linear algebra', 'num_results': 5, 'chanel_id': 'UCYO_jab_esuFRV4b17AJtAw', 'chanel_name': '3blue1brown'}, 
     {'search_string': 'convolutional neural networks and computer vision', 'num_results': 5, 'chanel_id': 'UCYO_jab_esuFRV4b17AJtAw', 'chanel_name': '3blue1brown'}, 
@@ -213,6 +218,4 @@ def make_first_entry():
     {'search_string': 'Geopolitics of energy', 'num_results': 10} 
 ]
 
-    for search in initial_searches:
-        response = make_youtube_request(search)
-        store_metadata(response, search['search_string'])
+#make_entry(initial_searches)

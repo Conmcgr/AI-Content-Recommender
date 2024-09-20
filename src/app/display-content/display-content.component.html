@@ -10,22 +10,29 @@
     <div class="video-panel">
         <div class="video-container">
             <div class="video-thumbnail" (click)="onVideoClick(vidId1)">
-                <img [src]="'https://img.youtube.com/vi/' + vidId1 + '/0.jpg'" alt="Video Thumbnail">
-              </div>
+              <img [src]="'https://img.youtube.com/vi/' + vidId1 + '/0.jpg'" alt="Video Thumbnail">
+              <h3>{{ videoDetails[vidId1]?.title }}</h3>
+              <p>Published by: {{ videoDetails[vidId1]?.channelTitle }}</p>
+              <p>Description: {{ videoDetails[vidId1]?.description }}</p>
+            </div>
         </div>
     
         <div class="video-container">
             <div class="video-thumbnail" (click)="onVideoClick(vidId2)">
-                <img [src]="'https://img.youtube.com/vi/' + vidId2 + '/0.jpg'" alt="Video Thumbnail">
-              </div>
+              <img [src]="'https://img.youtube.com/vi/' + vidId2 + '/0.jpg'" alt="Video Thumbnail">
+              <h3>{{ videoDetails[vidId2]?.title }}</h3>
+              <p>Published by: {{ videoDetails[vidId2]?.channelTitle }}</p>
+              <p>Description: {{ videoDetails[vidId2]?.description }}</p>
+            </div>
         </div>
     </div>
 
-    <div class="video-panel">
-        <div class="video-container single">
-            <div class="video-thumbnail" (click)="onVideoClick(vidId3)">
-                <img [src]="'https://img.youtube.com/vi/' + vidId3 + '/0.jpg'" alt="Video Thumbnail">
-              </div>
+    <div class="video-container">
+        <div class="video-thumbnail" (click)="onVideoClick(vidId3)">
+          <img [src]="'https://img.youtube.com/vi/' + vidId3 + '/0.jpg'" alt="Video Thumbnail">
+          <h3>{{ videoDetails[vidId3]?.title }}</h3>
+          <p>Published by: {{ videoDetails[vidId3]?.channelTitle }}</p>
+          <p>Description: {{ videoDetails[vidId3]?.description }}</p>
         </div>
     </div>
 </div>

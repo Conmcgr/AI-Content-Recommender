@@ -8,7 +8,7 @@ from data_collection import make_embedding
 import math
 
 def update_average_video_embedding(avg_vid_embedding, total_ratings, new_video, new_rating):
-    new_rating = int(new_rating)
+    new_rating = float(new_rating) - 4.5
     total_ratings += new_rating
 
     feature_map = {'title': 'title_embedded',
@@ -131,7 +131,7 @@ def get_top_3(video_collection, users_collection, user):
     ratings_list = ratings_video_similarity(user, videos, 20)
 
     total_rated = user["total_videos"]
-    bias_factor = 1 - math.exp(-0.5 * total_rated)
+    bias_factor = 1 - math.exp(-0.80 * total_rated)
 
     combined_list = []
     for video_id in set([vid for _, vid in interest_list] + [vid for _, vid in ratings_list]):

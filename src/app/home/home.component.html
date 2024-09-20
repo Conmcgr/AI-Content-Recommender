@@ -13,7 +13,7 @@
       <img [src]="'https://img.youtube.com/vi/' + video.video_id + '/default.jpg'" alt="Video thumbnail" class="video-thumbnail">
       <span class="video-title">{{ video.title }}</span>
       <div class="rating-input">
-        <input type="number" min="1" max="5" placeholder="Rate 1-5" #ratingInput>
+        <input type="number" min="1" max="10" placeholder="Rate 1-10" #ratingInput>
         <button (click)="submitRating(video.video_id, +ratingInput.value)">Submit Rating</button>
       </div>
     </div>

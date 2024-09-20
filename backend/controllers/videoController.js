@@ -38,14 +38,18 @@ exports.rateVideo = async (req, res) => {
 };
 
 exports.getVideoInfo = async (req, res) => {
+    const videoId = req.headers.videoid;
+    console.log('videoId:', videoId);
     try {
         const userId = req.userId;
-        const { videoId } = req.body;
+        const videoId = req.headers.videoid;
+        console.log('videoId:', videoId);
         const pythonServiceResponse = await axios.get('http://127.0.0.1:5000/api/video_info', {
-            headers: { userId: userId, videoId: videoId}
+            headers: { userId: userId, videoId: videoId }
         });
         res.status(200).json(pythonServiceResponse.data);
     } catch (error) {
+        console.error('Error in getVideoInfo:', error);
         res.status(500).json({ error: 'Failed to fetch video info' });
     }
 };
