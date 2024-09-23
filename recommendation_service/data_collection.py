@@ -5,6 +5,7 @@ import pymongo
 import random
 import torch
 from transformers import BertTokenizer, BertModel
+import re
 
 load_dotenv()
 
@@ -26,6 +27,7 @@ bert_model = BertModel.from_pretrained('bert-base-uncased')
 
 #Make MongoDB connection
 client = pymongo.MongoClient("mongodb://localhost:27017/")
+
 db = client['sparetime_database']
 video_collection = db['videos']
 
@@ -74,6 +76,19 @@ def make_embedding(text):
 
     return embedding
 
+def duration_to_seconds(duration):
+    pattern = re.compile(r'PT(\d+M)?(\d+S)?')
+    match = pattern.match(duration)
+
+    if not match:
+        return 0
+
+    minutes = int(match.group(1)[:-1]) if match.group(1) else 0
+    seconds = int(match.group(2)[:-1]) if match.group(2) else 0
+    
+    total_seconds = minutes * 60 + seconds
+    return total_seconds
+
 def store_metadata(metadata, search_tag):
     for item in metadata['items']:
         video_id = item['id']['videoId']
@@ -110,7 +125,7 @@ def store_metadata(metadata, search_tag):
             'tags_embedded': [] if not tags else make_embedding(tags).tolist(),
             'category': search_tag,
             'category_embedded': make_embedding(search_tag).tolist(),
-            'duration': more_details['contentDetails'].get('duration', 'Unknown'),
+            'duration': duration_to_seconds(more_details['contentDetails'].get('duration', 'Unknown')),
             'definition': more_details['contentDetails'].get('definition', 'Unknown'),
             'dimension': more_details['contentDetails'].get('dimension', 'Unknown'),
             'licensed_content': more_details['contentDetails'].get('licensedContent', False),
@@ -121,8 +136,6 @@ def store_metadata(metadata, search_tag):
         print(f'inserted video: {video_id}')
 
 def make_entry(searches):
-    
-
     for search in searches:
         try:
             response = make_youtube_request(search)
@@ -179,33 +192,51 @@ initial_searches = [
     {'search_string': 'Easy Cooking Recipes for Beginners', 'num_results': 10},
     {'search_string': 'Gourmet Cooking Made Simple', 'num_results': 10},
     {'search_string': '10-Minute Meals', 'num_results': 10},
-    {'search_string': 'How to Make Pasta from Scratch', 'num_results': 10},
-    {'search_string': 'Cooking with Seasonal Ingredients', 'num_results': 10},
-    {'search_string': 'How to Bake the Perfect Cake', 'num_results': 10},
-    {'search_string': 'Best Cooking Hacks / Advice', 'num_results': 10},
-    {'search_string': 'Quick and Easy Breakfast Recipes', 'num_results': 10},
-    {'search_string': 'Healthy Dinners in 30 Minutes', 'num_results': 10},
-    {'search_string': 'Best Cooking Tools for Your Kitchen', 'num_results': 10},
-    {'search_string': 'Sous Vide Cooking for Beginners', 'num_results': 10},
-    {'search_string': 'Creative Dessert Ideas', 'num_results': 10},
-    {'search_string': 'How to Make Sushi at Home', 'num_results': 10},
-    {'search_string': 'Cooking with Spices and Herbs', 'num_results': 10},
-    {'search_string': 'Regional Cooking from Around the World', 'num_results': 10},
-    {'search_string': 'Baking Bread at Home', 'num_results': 10},
-    {'search_string': 'Mastering French Cuisine', 'num_results': 10},
-    {'search_string': 'Cooking Hacks for Busy People', 'num_results': 10},
-    {'search_string': 'Comfort Food Recipes for Winter', 'num_results': 10},
-    {'search_string': 'Unusual Food Combinations', 'num_results': 10},
-    {'search_string': 'Experimental Cooking Techniques', 'num_results': 10},
-    {'search_string': 'Cooking with Leftovers', 'num_results': 10},
-    {'search_string': 'International Cooking Recipes', 'num_results': 10},
-    {'search_string': 'Gourmet Meals at Home', 'num_results': 10},
-    {'search_string': 'US election analysis', 'num_results': 10},
-    {'search_string': 'Global political trends', 'num_results': 10},
-    {'search_string': 'Political ideologies explained', 'num_results': 10},
-    {'search_string': 'History of democracy', 'num_results': 10},
-    {'search_string': 'Political scandals throughout history', 'num_results': 10},
-    {'search_string': 'Influence of media on politics', 'num_results': 10},
+]
+
+second_searches = [
+    {'search_string': 'Reinforcement Learning in Games', 'num_results': 10}, 
+    {'search_string': 'Bayesian Statistics', 'num_results': 10}, 
+    {'search_string': 'Natural Language Processing Overview', 'num_results': 10}, 
+    {'search_string': 'AI for Robotics', 'num_results': 10}, 
+    {'search_string': 'Advanced Machine Learning Concepts', 'num_results': 10},
+    {'search_string': 'Generative AI Explained', 'num_results': 10},
+    {'search_string': 'AI for Game Development', 'num_results': 10},
+    {'search_string': 'Data Augmentation Techniques', 'num_results': 10},
+    {'search_string': 'AI in Finance', 'num_results': 10},
+    {'search_string': 'AI in Education', 'num_results': 10},
+    {'search_string': 'Fairness in Machine Learning', 'num_results': 10},
+    {'search_string': 'AI in Cybersecurity', 'num_results': 10},
+    {'search_string': 'AI in Drug Discovery', 'num_results': 10},
+    {'search_string': 'AI for Creativity and Arts', 'num_results': 10},
+    {'search_string': 'AI-Powered Personal Assistants', 'num_results': 10},
+    {'search_string': 'Intro to AI Ethics', 'num_results': 10},
+    {'search_string': 'AI in Agriculture', 'num_results': 10},
+    {'search_string': 'AI for Smart Cities', 'num_results': 10},
+    {'search_string': 'AI in Legal Tech', 'num_results': 10},
+    {'search_string': 'Impact of AI on Jobs', 'num_results': 10},
+    {'search_string': 'AI-Powered Healthcare Diagnostics', 'num_results': 10},
+    {'search_string': 'AI in Autonomous Vehicles', 'num_results': 10},
+    {'search_string': 'AI for Smart Homes', 'num_results': 10},
+    {'search_string': 'AI for Environmental Monitoring', 'num_results': 10},
+    {'search_string': 'Beginner Finance Courses', 'num_results': 10},
+    {'search_string': 'Value Investing Basics', 'num_results': 10},
+    {'search_string': 'Economic Indicators Explained', 'num_results': 10},
+    {'search_string': 'Stock Market Psychology', 'num_results': 10},
+    {'search_string': 'How to Analyze Company Financials', 'num_results': 10},
+    {'search_string': 'Hedge Funds vs Mutual Funds', 'num_results': 10},
+    {'search_string': 'Crypto Trading Strategies', 'num_results': 10},
+    {'search_string': 'Investment Risk Management', 'num_results': 10},
+    {'search_string': 'Real Estate Investing for Beginners', 'num_results': 10},
+    {'search_string': 'Financial Independence through Real Estate', 'num_results': 10},
+    {'search_string': 'Dividend Growth Investing', 'num_results': 10},
+    {'search_string': 'Options Trading for Beginners', 'num_results': 10},
+    {'search_string': 'Forex Trading Basics', 'num_results': 10},
+    {'search_string': 'Analyzing Market Cycles', 'num_results': 10},
+    {'search_string': 'Passive Investing Strategies', 'num_results': 10},
+    {'search_string': 'Startup Investing for Beginners', 'num_results': 10},
+    {'search_string': 'Sustainable Investing Strategies', 'num_results': 10},
+    {'search_string': 'How to Make Homemade Pizza', 'num_results': 10},
     {'search_string': 'International relations and diplomacy', 'num_results': 10},
     {'search_string': 'How political campaigns work', 'num_results': 10},
     {'search_string': 'Political corruption around the world', 'num_results': 10},
@@ -218,4 +249,14 @@ initial_searches = [
     {'search_string': 'Geopolitics of energy', 'num_results': 10} 
 ]
 
-#make_entry(initial_searches)
+third_searches = [
+    {'search_string': 'Interesting TedX Talks', 'num_results': 400, 'channel_name': 'TEDx', 'chanel_id': 'UCAuUUnT6oDeKwE6v1NGQxug'},
+    {'search_string': 'Interesting Ted Talks', 'num_results': 400, 'channel_name': 'TED', 'chanel_id': 'CsT0YIqwnpJCM-mx7-gSA4Q"'},
+    {'search_string': 'Best 3blue1brown Videos', 'num_results': 200, 'chanel_id': 'UCYO_jab_esuFRV4b17AJtAw', 'chanel_name': '3blue1brown'},  
+]
+
+fourth_searches = [
+    {'search_string': 'Veritasium', 'num_results': 200, 'channel_name': 'Veritasium', 'chanel_id': 'UCHnyfMqiRRG1u-2MsSQLbXA'},
+    {'search_string': 'vsauce1', 'num_results': 100, 'channel_name': 'vsauce1', 'chanel_id': 'UC6nSFpj9HTCZ5t-N3Rm3-HA'},
+    {'search_string': 'MarkRober', 'num_results': 100, 'channel_name': 'MarkRober', 'chanel_id': 'UCY1kMZp36IQSyNx_9h4mpCg'}  
+]

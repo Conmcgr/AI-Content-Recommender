@@ -1,26 +1,29 @@
 <div class="login-container">
-    <div class="left-panel">
-      <h1>Welcome to sparetime</h1>
-      <p>
-        sparetime is an AI powered content recommendation to help you
-        optimize your free time, and eliminate doom-scrolling.
-      </p>
-    </div>
-    <div class="right-panel">
-      <img src="/assets/sparetime_logo.png" alt="sparetime Logo" class="logo" (click)="navigateToHome()">
-      <form (ngSubmit)="onSubmit()">
-        <div class="form-group">
-          <input type="text" placeholder="username" [(ngModel)]="username" name="username" required>
-        </div>
-        <div class="form-group">
-          <input type="password" placeholder="password" [(ngModel)]="password" name="password" required>
-        </div>
-        <div *ngIf="errorMessage" class="error-message">
-          {{ errorMessage }}
-        </div>
-        <button type="submit" class="login-button">Log In</button>
-      </form>
-      <a routerLink="/signup" class="create-account-link">Create Account</a>
-    </div>
+  <div class="left-panel">
+    <h1>Welcome to Sparetime</h1>
+    <p class="tagline">Optimize your free time with AI-powered content recommendations</p>
+    <ul class="features">
+      <li>Personalized content discovery</li>
+      <li>Eliminate doom-scrolling</li>
+      <li>Enhance your learning experience</li>
+      <li>Maximize productivity in your spare time</li>
+    </ul>
   </div>
-  
+  <div class="right-panel">
+    <img src="/assets/sparetime_logo.png" alt="Sparetime Logo" class="logo" (click)="navigateToHome()">
+    <h2>Log in to your account</h2>
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <input type="text" placeholder="Username" [(ngModel)]="username" name="username" required>
+      </div>
+      <div class="form-group">
+        <input type="password" placeholder="Password" [(ngModel)]="password" name="password" required>
+      </div>
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+      <button type="submit" class="login-button">Log In</button>
+    </form>
+    <p class="signup-text">New to Sparetime? <a routerLink="/signup" class="create-account-link">Create an account</a></p>
+  </div>
+</div>
