@@ -56,7 +56,10 @@ export class StartSessionComponent {
       return;
     }
     this.http.get<any>('/api/video/top3', {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        duration: this.sessionLength.toString()
+      }
     }).subscribe(
       (response: any) => {
         if (response && response.videoIds && response.videoIds.length >= 3) {

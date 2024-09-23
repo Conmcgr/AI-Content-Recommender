@@ -3,19 +3,20 @@ const axios = require('axios');
 exports.getTop3 = async (req, res) => {
     try {
         const userId = req.userId;
+        const duration = req.headers.duration;
         const pythonServiceResponse = await axios.get('http://127.0.0.1:5000/api/top3', {
-            headers: { userId: userId }
+            headers: { 
+                userId: userId, 
+                duration: duration 
+            }
         });
         res.status(200).json({videoIds: pythonServiceResponse.data.top3VideoIds});
     } catch (error) {
         console.error('Error in getTop3:', error.message);
-        if (error.response) {
-            console.error('Python service response:', error.response.data);
-            console.error('Status code:', error.response.status);
-        }
         res.status(500).json({ error: 'Failed to fetch top 3 videos', details: error.message });
     }
 };
+
 exports.rateVideo = async (req, res) => {
     try {
         const userId = req.userId;

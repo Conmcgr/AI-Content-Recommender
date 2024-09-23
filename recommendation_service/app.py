@@ -16,13 +16,14 @@ queue_colection = db['rating_queue']
 @app.route('/api/top3', methods=['GET'])
 def get_top_3_videos():
     user_id = request.headers.get('userId')
+    duration = int(request.headers.get('duration'))
     if not user_id:
         return jsonify({"error": "User ID not provided"}), 400
     user = users_collection.find_one({ "_id": ObjectId(user_id) })
     if not user:
         return jsonify({"error": user_id + " not found"}), 404
     
-    top_3_video_ids = get_top_3(video_collection, users_collection, user)
+    top_3_video_ids = get_top_3(video_collection, users_collection, user, duration)
     print(f"Returning top 3 video IDs: {top_3_video_ids}")
     return jsonify({"top3VideoIds": top_3_video_ids})
 

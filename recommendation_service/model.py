@@ -119,8 +119,17 @@ def ratings_video_similarity(user, videos, num_vids):
     similarities.sort(reverse = True)
     return similarities[:num_vids]
 
-def get_top_3(video_collection, users_collection, user):
-    videos = list(video_collection.find({"video_id": {"$nin": user["videos_seen"]}}))
+def get_top_3(video_collection, users_collection, user, duration):
+    tolerance = 150
+    target_duration = duration*60
+
+    videos = list(video_collection.find({
+        "video_id": {"$nin": user["videos_seen"]},
+        "duration_in_seconds": {
+            "$gte": target_duration - tolerance, 
+            "$lte": target_duration + tolerance
+        }
+    }))
     if user['total_videos'] == 0:
         print('here')
         top_3 = [video_id for similarity, video_id in interest_video_similarity(user, videos, 3)]
